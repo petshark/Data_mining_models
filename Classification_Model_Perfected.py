@@ -7,9 +7,11 @@ Created on Sat Mar 27 12:56:02 2021
 def Process_data(category, input_parameters):
     import pandas as pd
     from textblob import TextBlob
+    from pathlib import Path
+
+    path = Path(__file__).parent / "IMDB-Movie-Data.csv"
     
-    
-    df = pd.read_csv (r'C:\Users\carlo\OneDrive\Escritorio\Holy Hack Data\IMDB-Movie-Data.csv')
+    df = pd.read_csv (path)
 
     
     category = category
