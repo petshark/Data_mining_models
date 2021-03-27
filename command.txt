@@ -1,0 +1,1 @@
+cat directors.csv | uniq | sort | awk '{ print "\""$0"\"," }' > directors.json
