@@ -4,7 +4,7 @@ Created on Sat Mar 27 12:56:02 2021
 
 @author: carlo
 """
-def Process_data(input_parameters):
+def Process_data(category, input_parameters):
     import pandas as pd
     from textblob import TextBlob
     
@@ -12,15 +12,19 @@ def Process_data(input_parameters):
     df = pd.read_csv (r'C:\Users\carlo\OneDrive\Escritorio\Holy Hack Data\IMDB-Movie-Data.csv')
 
     
-    category = input_parameters['Category_to_be_predicted']
+    category = category
 
-    if category=='Not Good':
-        low_bound, upper_bound = 0, 6.5
+    if category=='Very Bad':
+        low_bound, upper_bound = 0, 3.5
+    elif category=='Bad':
+        low_bound, upper_bound = 4, 5
+    elif category=='Disappointing':
+        low_bound, upper_bound = 5.5, 6.5
     elif category=='Good':
         low_bound, upper_bound = 6.5, 7.5
     elif category=='Very Good':
         low_bound, upper_bound = 7.5, 8.5
-    elif category=='Extremely Good':
+    elif category=='Excellent':
         low_bound, upper_bound = 8.5, 9   
     
     Dataset_cleaned = pd.DataFrame([])
@@ -139,10 +143,6 @@ def Train_Ensemble_Model(X_train, Y_train, X_test, Y_test):
     #Create a Gaussian Classifier
     clf=RandomForestClassifier(n_estimators=100)
     clf.fit(X_train, Y_train)
-    print('Accuracy of Random Forest classifier on training set: {:.2f}'
-     .format(roc_auc_score(Y_train, clf.predict_proba(X_train)[:, 1])))
-    print('Accuracy of Random Forest classifier on test set: {:.2f}'
-     .format(roc_auc_score(Y_test, clf.predict_proba(X_test)[:, 1])))
     return clf
 
 def Make_Prediction(model, observation):
@@ -152,11 +152,45 @@ def Make_Prediction(model, observation):
     prediction = model.predict_proba(X_observation)[:, 1]
     return prediction
 
+def Make_Quality_Graph(Predictions):
+    import matplotlib.pyplot as plt
+    x = Predictions['Category']
+    y = Predictions['Probability']
+    plt.plot(x, y)
+    plt.scatter(x, y)
+    plt.xlabel('Category')
+    plt.ylabel('Probability')
+    plt.show
+    
+def Train_Models(input_parameters): 
+    Models = {};
+    input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Quentin Tarantito', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Action'}
+    for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
+        data_set_ready, observation_ready = Process_data(category, input_parameters)
+        X_train, Y_train, X_test, Y_test = Partition_Overall_Dataset(data_set_ready)
+        prediction_model = Train_Ensemble_Model(X_train, Y_train, X_test, Y_test)
+        Models[category] = prediction_model
+    return Models
 
 
-def Prediction_Controller(input_parameters):
-    data_set_ready, observation_ready = Process_data(input_parameters)
-    X_train, Y_train, X_test, Y_test = Partition_Overall_Dataset(data_set_ready)
-    prediction_model = Train_Ensemble_Model(X_train, Y_train, X_test, Y_test)
-    prediction = Make_Prediction(prediction_model, observation_ready)
-    return prediction
+def Prediction_Controller(input_parameters, models):
+    Predictions = {'Category':[],'Probability':[]};
+    Predictions_Sum = 0
+    for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
+        data_set_ready, observation_ready = Process_data(category, input_parameters)
+        prediction_model = models[category]
+        prediction = Make_Prediction(prediction_model, observation_ready)
+        Predictions_Sum += prediction[0]
+        Predictions['Category'].append(category)
+        Predictions['Probability'].append(prediction[0])
+    
+    for i in range(len(Predictions['Probability'])):
+        Predictions['Probability'] /= Predictions_Sum
+        
+        
+    Make_Quality_Graph(Predictions)
+    
+    
+    
+    
+    return Predictions
