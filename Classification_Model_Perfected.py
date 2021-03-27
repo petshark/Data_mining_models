@@ -162,37 +162,50 @@ def Make_Quality_Graph(Predictions):
     plt.scatter(x, y)
     plt.xlabel('Category')
     plt.ylabel('Probability')
+    plt.grid()
     plt.show
     
 def Train_Models(input_parameters): 
+    import pickle
+    from pathlib import Path
+
+    
     Models = {};
     input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Quentin Tarantito', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Action'}
     for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
         data_set_ready, observation_ready = Process_data(category, input_parameters)
         X_train, Y_train, X_test, Y_test = Partition_Overall_Dataset(data_set_ready)
         prediction_model = Train_Ensemble_Model(X_train, Y_train, X_test, Y_test)
-        Models[category] = prediction_model
+        with open('ensemblemodel'+category+'.pickle','wb') as dump_var:
+            pickle.dump(prediction_model, dump_var)
+        print(dump_var)
+        Models[category] = dump_var
+    
     return Models
 
 
 def Prediction_Controller(input_parameters, models):
+
+    import pickle
+    
     Predictions = {'Category':[],'Probability':[]};
     Predictions_Sum = 0
     for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
         data_set_ready, observation_ready = Process_data(category, input_parameters)
-        prediction_model = models[category]
+        pickle_in = open(models[category], 'rb')
+        prediction_model = pickle.load(models[category])
         prediction = Make_Prediction(prediction_model, observation_ready)
         Predictions_Sum += prediction[0]
         Predictions['Category'].append(category)
         Predictions['Probability'].append(prediction[0])
     
     for i in range(len(Predictions['Probability'])):
-        Predictions['Probability'] /= Predictions_Sum
+        Predictions['Probability'][i] /= Predictions_Sum
         
         
-    Make_Quality_Graph(Predictions)
+    Graph = Make_Quality_Graph(Predictions)
     
     
     
     
-    return Predictions
+    return Predictions, Graph
