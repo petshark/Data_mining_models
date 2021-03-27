@@ -192,8 +192,8 @@ def Prediction_Controller(input_parameters, models):
     Predictions_Sum = 0
     for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
         data_set_ready, observation_ready = Process_data(category, input_parameters)
-        pickle_in = open(models[category], 'rb')
-        prediction_model = pickle.load(models[category])
+        pickle_in = open('ensemblemodel'+category+'.pickle', 'rb')
+        prediction_model = pickle.load(pickle_in)
         prediction = Make_Prediction(prediction_model, observation_ready)
         Predictions_Sum += prediction[0]
         Predictions['Category'].append(category)
@@ -209,3 +209,11 @@ def Prediction_Controller(input_parameters, models):
     
     
     return Predictions, Graph
+
+
+
+
+if __name__ == '__main__':
+    input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Christopher Nolan', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Drama, Horror'}
+    models = Train_Models(input_parameters)
+    ll = Prediction_Controller(input_parameters, models)
