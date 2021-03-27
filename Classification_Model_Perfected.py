@@ -184,8 +184,7 @@ def Train_Models(input_parameters):
     return Models
 
 
-def Prediction_Controller(input_parameters, models):
-
+def Prediction_Controller(input_parameters):
     import pickle
     
     Predictions = {'Category':[],'Probability':[]};
@@ -210,10 +209,27 @@ def Prediction_Controller(input_parameters, models):
     
     return Predictions, Graph
 
+def Prediction_Controller_Single(input_parameters, category):
+    import pickle
+
+    Predictions = {'Category':[],'Probability':[]};
+    # for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
+    data_set_ready, observation_ready = Process_data(category, input_parameters)
+    pickle_in = open('ensemblemodel'+category+'.pickle', 'rb')
+    prediction_model = pickle.load(pickle_in)
+    prediction = Make_Prediction(prediction_model, observation_ready)
+    Predictions['Category'].append(category)
+    Predictions['Probability'].append(prediction[0])
+
+    Graph = Make_Quality_Graph(Predictions)
+
+    return Predictions, Graph
+
 
 
 
 if __name__ == '__main__':
     input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Christopher Nolan', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Drama, Horror'}
-    models = Train_Models(input_parameters)
-    ll = Prediction_Controller(input_parameters, models)
+    # models = Train_Models(input_parameters)
+    ll = Prediction_Controller_Single(input_parameters, 'Very Good')
+    print(ll)
