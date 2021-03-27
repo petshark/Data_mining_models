@@ -232,4 +232,5 @@ if __name__ == '__main__':
     input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Christopher Nolan', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Drama, Horror'}
     # models = Train_Models(input_parameters)
     ll = Prediction_Controller_Single(input_parameters, 'Very Good')
+    # ll = Prediction_Controller(input_parameters)
     print(ll)
