@@ -8,10 +8,10 @@ Created on Fri Mar 26 20:35:09 2021
 
 
 
-import pandas as pd
+from pandas import pandas as pd
 
 
-df = pd.read_csv (r'C:\Users\carlo\OneDrive\Escritorio\Holy Hack Data\IMDB-Movie-Data.csv')
+df = pd.read_csv (r'./IMDB-Movie-Data.csv')
 print (df)
 
 
