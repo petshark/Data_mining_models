@@ -176,7 +176,7 @@ def Train_Models(input_parameters):
         data_set_ready, observation_ready = Process_data(category, input_parameters)
         X_train, Y_train, X_test, Y_test = Partition_Overall_Dataset(data_set_ready)
         prediction_model = Train_Ensemble_Model(X_train, Y_train, X_test, Y_test)
-        with open('ensemblemodel'+category+'.pickle','wb') as dump_var:
+        with open('ensemblemodel'+category.replace(" ", "")+'.pickle','wb') as dump_var:
             pickle.dump(prediction_model, dump_var)
         print(dump_var)
         Models[category] = dump_var
@@ -191,7 +191,7 @@ def Prediction_Controller(input_parameters):
     Predictions_Sum = 0
     for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
         data_set_ready, observation_ready = Process_data(category, input_parameters)
-        pickle_in = open('ensemblemodel'+category+'.pickle', 'rb')
+        pickle_in = open('ensemblemodel'+category.replace(" ", "")+'.pickle', 'rb')
         prediction_model = pickle.load(pickle_in)
         prediction = Make_Prediction(prediction_model, observation_ready)
         Predictions_Sum += prediction[0]
@@ -215,7 +215,7 @@ def Prediction_Controller_Single(input_parameters, category):
     Predictions = {'Category':[],'Probability':[]};
     # for category in ['Very Bad', 'Bad', 'Disappointing', 'Good','Very Good','Excellent']:
     data_set_ready, observation_ready = Process_data(category, input_parameters)
-    pickle_in = open('ensemblemodel'+category+'.pickle', 'rb')
+    pickle_in = open('ensemblemodel'+category.replace(" ", "")+'.pickle', 'rb')
     prediction_model = pickle.load(pickle_in)
     prediction = Make_Prediction(prediction_model, observation_ready)
     Predictions['Category'].append(category)
