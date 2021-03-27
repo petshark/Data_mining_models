@@ -202,12 +202,12 @@ def Prediction_Controller(input_parameters):
         Predictions['Probability'][i] /= Predictions_Sum
         
         
-    Graph = Make_Quality_Graph(Predictions)
+    #Graph = Make_Quality_Graph(Predictions)
     
     
     
     
-    return Predictions, Graph
+    return Predictions
 
 def Prediction_Controller_Single(input_parameters, category):
     import pickle
@@ -221,9 +221,9 @@ def Prediction_Controller_Single(input_parameters, category):
     Predictions['Category'].append(category)
     Predictions['Probability'].append(prediction[0])
 
-    Graph = Make_Quality_Graph(Predictions)
+    #Graph = Make_Quality_Graph(Predictions)
 
-    return Predictions, Graph
+    return Predictions
 
 
 
@@ -231,6 +231,6 @@ def Prediction_Controller_Single(input_parameters, category):
 if __name__ == '__main__':
     input_parameters = {'Category_to_be_predicted':'Good', 'Director':'Christopher Nolan', 'Duration':120, 'Description':'A very bloody good movie', 'Genre':'Drama, Horror'}
     # models = Train_Models(input_parameters)
-    ll = Prediction_Controller_Single(input_parameters, 'Very Good')
-    # ll = Prediction_Controller(input_parameters)
+    # ll = Prediction_Controller_Single(input_parameters, 'Very Good')
+    ll = Prediction_Controller(input_parameters)
     print(ll)
